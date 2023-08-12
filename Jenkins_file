@@ -1,0 +1,22 @@
+pipeline {
+   agent any
+   
+    environment {
+       M2_INSTALL = "/usr/bin/mvn"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                git 'https://github.com/nageshvkn/gamutkart2.git'
+                sh 'mvn install'
+            }
+        }
+        stage('Deployment') {
+        
+            steps {
+                sh 'sshpass -p agent-1 scp target/gamutgurus.war agent-1@172.17.0.2:/home/agent-1/apache-tomcat-9.0.78/webapps'
+                sh 'sshpass -p agent-1 ssh agent-1@172.17.0.2 "/home/agent-1/apache-tomcat-9.0.78/bin/startup.sh"'
+            }
+        }
+    }
+}
